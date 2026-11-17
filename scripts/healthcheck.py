@@ -3,15 +3,15 @@
 
 用法：
   python3 scripts/healthcheck.py           查一遍，不花钱
-  python3 scripts/healthcheck.py --quiet   只打印结论和问题项
-  python3 scripts/healthcheck.py --network 跳过网络检查（离线时用）
+  python3 scripts/healthcheck.py --quiet   只打印问题项（正常时几乎不说话）
+  python3 scripts/healthcheck.py --offline 跳过联网检查（离线、或不想发请求时用）
 
 查六件事：
   1. Python 版本够不够（要 3.8 以上）
   2. skill 的文件齐不齐、脚本语法通不通
   3. 脚本有没有用到标准库以外的东西（这套脚本号称只用标准库）
   4. DataForSEO 凭证找到了没有、有效没有、余额还剩多少
-  5. 四个数据源通不通：谷歌下拉、RDAP、苹果商店、DataForSEO
+  5. 数据源通不通：谷歌下拉、RDAP、苹果商店（DataForSEO 在上一项顺带验）
   6. 有没有设代理环境变量
 
 结论只有两种：
@@ -35,7 +35,8 @@ PY_SCRIPTS = ["dfs.py", "suggest.py", "appstore_new.py", "domain_check.py",
               "serp_table.py", "whois_date.py"]
 JS_SCRIPTS = ["google_top20.js"]
 REFS = ["取谷歌前20名的办法.md", "新词的几条规律.md", "查询词怎么出.md",
-        "读真人原帖的办法.md", "从抱怨里找.md", "去哪发现新词和新站.md"]
+        "读真人原帖的办法.md", "从抱怨里找.md", "去哪发现新词和新站.md",
+        "本地部署与快速开始.md"]
 
 UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/131.0 Safari/537.36")
@@ -238,7 +239,7 @@ def check_proxy():
 # ---------- 汇总 ----------
 def main():
     quiet = "--quiet" in sys.argv
-    network = "--network" not in sys.argv and "--offline" not in sys.argv
+    network = "--offline" not in sys.argv
 
     check_python()
     check_files()

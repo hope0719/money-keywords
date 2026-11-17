@@ -25,7 +25,8 @@
   1. 当前工作目录的 .env
   2. scripts/ 目录下的 .env
   3. skill 根目录的 .env          ← 推荐，本机就放这里，换工作目录也不用重配
-  4. ~/.workbuddy/secrets/dataforseo.env
+  4. skill 根目录的真实路径的 .env（装成副本时 3 和 4 是两个不同目录，都会找）
+  5. ~/.workbuddy/secrets/dataforseo.env
 也可以直接用同名环境变量。没配凭证也能跑整套流程，见
 references/本地部署与快速开始.md 的「轻量一轮」。
 
@@ -55,17 +56,31 @@ def env_search_paths():
 
     本机增强：原版只认「当前工作目录的 .env」，从别处调用脚本（例如
     `python3 ~/.workbuddy/skills/money-keywords/scripts/dfs.py ...`）时 CWD 不是
-    skill 目录，凭证就找不到。这里改成四级查找，任一处命中即可。
+    skill 目录，凭证就找不到。这里改成按优先级查找，任一处命中即可。
+
+    第 3、4 项是同一个「skill 根目录」的两种可能：安装器常用软链
+    （skills/money-keywords -> 版本目录），此时脚本被调用时看到的是软链路径，
+    而 os.path.abspath 不解析软链、os.path.realpath 解析；装成副本时这两个目录
+    就真的不同。两个都找，用户把 .env 放进哪个根目录都能命中（同一个目录会自动去重）。
+
     healthcheck.py 复用本函数，保证两处口径一致。
     """
     here = os.path.dirname(os.path.abspath(__file__))
     skill_root = os.path.dirname(here)
-    return [
+    real_root = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+    paths = [
         os.path.join(os.getcwd(), ".env"),                                  # 1. 本轮工作目录
         os.path.join(here, ".env"),                                         # 2. scripts/
-        os.path.join(skill_root, ".env"),                                   # 3. skill 根目录
-        os.path.expanduser("~/.workbuddy/secrets/dataforseo.env"),          # 4. 全局 secrets
+        os.path.join(skill_root, ".env"),                                   # 3. skill 根目录（调用时看到的路径）
+        os.path.join(real_root, ".env"),                                    # 4. skill 根目录（软链指向的真实路径）
+        os.path.expanduser("~/.workbuddy/secrets/dataforseo.env"),          # 5. 全局 secrets
     ]
+    seen, out = set(), []
+    for p in paths:
+        if p not in seen:
+            seen.add(p)
+            out.append(p)
+    return out
 
 
 def creds(verbose=False):
