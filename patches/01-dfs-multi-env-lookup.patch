@@ -1,0 +1,82 @@
+--- a/scripts/dfs.py
++++ b/scripts/dfs.py
+@@ -17,10 +17,17 @@
+   python3 dfs.py cost
+       这个文件夹里到现在一共花了多少。
+ 
+-凭证：在你运行命令的那个文件夹里放一个 .env 文件，写两行
++凭证：放一个 .env 文件，写两行
+   DATAFORSEO_LOGIN=接口登录名
+   DATAFORSEO_PASSWORD=接口密码
+ 两个值在 DataForSEO 后台的 API Access 页。脚本只读这两行，不打印、不存到别处。
++按顺序找这几个位置，先找到的先用（任选一处放就行）：
++  1. 当前工作目录的 .env
++  2. scripts/ 目录下的 .env
++  3. skill 根目录的 .env          ← 推荐，本机就放这里，换工作目录也不用重配
++  4. ~/.workbuddy/secrets/dataforseo.env
++也可以直接用同名环境变量。没配凭证也能跑整套流程，见
++references/本地部署与快速开始.md 的「轻量一轮」。
+ 
+ 花费：每次请求把接口返回的实际花费记进当前文件夹的 花费.tsv，每条命令最后打印这次花了多少、累计多少。
+ 读数：返回里没有的写「没收录」，不填 0。月搜索量是估算的搜索次数，不是会来的人数。
+@@ -43,10 +50,35 @@
+ _spent = 0.0
+ 
+ 
+-def creds():
++def env_search_paths():
++    """按优先级列出 .env 可能的位置。
++
++    本机增强：原版只认「当前工作目录的 .env」，从别处调用脚本（例如
++    `python3 ~/.workbuddy/skills/money-keywords/scripts/dfs.py ...`）时 CWD 不是
++    skill 目录，凭证就找不到。这里改成四级查找，任一处命中即可。
++    healthcheck.py 复用本函数，保证两处口径一致。
++    """
++    here = os.path.dirname(os.path.abspath(__file__))
++    skill_root = os.path.dirname(here)
++    return [
++        os.path.join(os.getcwd(), ".env"),                                  # 1. 本轮工作目录
++        os.path.join(here, ".env"),                                         # 2. scripts/
++        os.path.join(skill_root, ".env"),                                   # 3. skill 根目录
++        os.path.expanduser("~/.workbuddy/secrets/dataforseo.env"),          # 4. 全局 secrets
++    ]
++
++
++def creds(verbose=False):
+     login, pw = os.environ.get("DATAFORSEO_LOGIN"), os.environ.get("DATAFORSEO_PASSWORD")
+-    if not (login and pw) and os.path.exists(".env"):
+-        for line in open(".env", encoding="utf-8", errors="ignore"):
++    src = "环境变量" if (login and pw) else None
++    tried = []
++    for p in env_search_paths():
++        tried.append(p)
++        if login and pw:
++            break
++        if not os.path.exists(p):
++            continue
++        for line in open(p, encoding="utf-8", errors="ignore"):
+             m = re.match(r"\s*(DATAFORSEO_LOGIN|DATAFORSEO_PASSWORD)\s*=\s*(.*)", line)
+             if m:
+                 v = m.group(2).strip().strip("\"'")
+@@ -54,8 +86,20 @@
+                     login = login or v
+                 else:
+                     pw = pw or v
++        if login and pw and not src:
++            src = p
+     if not (login and pw):
+-        sys.exit("没有找到 DataForSEO 的凭证。在当前文件夹的 .env 里写两行：DATAFORSEO_LOGIN= 和 DATAFORSEO_PASSWORD=")
++        sys.exit(
++            "没有找到 DataForSEO 的凭证。下面这些位置都找过了：\n  - "
++            + "\n  - ".join(tried)
++            + "\n\n任选一处放一个 .env，里面写两行：\n"
++            "  DATAFORSEO_LOGIN=接口登录名\n  DATAFORSEO_PASSWORD=接口密码\n"
++            "（两个值在 DataForSEO 后台的 API Access 页；也可以用同名环境变量）\n\n"
++            "没有凭证也能跑这一整套，只是趋势和搜索量要改用浏览器手动看，"
++            "见 references/本地部署与快速开始.md 的「轻量一轮」。"
++        )
++    if verbose and src:
++        print(f"[凭证] 来自 {src}", file=sys.stderr)
+     return login, pw
+ 
+ 

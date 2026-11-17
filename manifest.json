@@ -1,0 +1,80 @@
+{
+  "code": "money-keywords",
+  "version": "1.0.1",
+  "type": "skill",
+  "displayName": "Money Keywords：找新词、新站",
+  "description": "给一个方向（一个刚出来的新东西、一个新站的网址、一件具体的事都行），它从谷歌趋势里找出刚涨起来的英文搜索词，看谷歌前 20 名里有没有新站排上去、怎么收费，最后押三个词：对标站、第一版做什么、注册什么域名。",
+  "examplePrompts": [
+    "帮我找英文词：kling 4.0 刚出来，围绕它有哪些新词能做",
+    "我想做 AI 视频方向的英文工具站，帮我找三个有流量、竞争没那么激烈的词",
+    "我最近看到一个刚上线的小工具站，帮我从它在做的词找起，看看我能不能做一个对标的",
+    "ai product video generator、product video maker、ugc video generator 这几个词哪个最值得做",
+    "没想好方向，帮我从最近在涨的搜法里找三个能做的英文词"
+  ],
+  "itCanHelpYou": [
+    "从谷歌趋势里找出近两个月刚涨起来的英文搜索词，查月搜索量、判断新旧",
+    "看谷歌前 20 名里有没有注册一年以内的新站排上去，它们在做什么、怎么收费",
+    "按流量、竞争、付钱、差别、能做五项给每个词打分，再专门找反证挑刺",
+    "押三个词：各自的对标站、第一版做什么、注册什么域名、怎么算赢怎么算输"
+  ],
+  "dependsOn": [],
+  "files": [
+    {
+      "path": "SKILL.md",
+      "sha256": "0cffaa8956a0365244b279ecd59fce1589df6fe0d024a4ce9878df3417789b46"
+    },
+    {
+      "path": "references/从抱怨里找.md",
+      "sha256": "f2243f263a45ea9879698fa982c0acd8426d824ceb4d3688771fca31a0a0e4d2"
+    },
+    {
+      "path": "references/去哪发现新词和新站.md",
+      "sha256": "a2638cf183bf14a86681e75503fab1ea1011adfeb365be81661fcfc3d51874d9"
+    },
+    {
+      "path": "references/取谷歌前20名的办法.md",
+      "sha256": "90cf959752bf3c825ab1f11aeede3ec94778b9a4470d0a3dc9540bde4d5cd2d7"
+    },
+    {
+      "path": "references/新词的几条规律.md",
+      "sha256": "b8a87a038a0900a76182230781f693fd7081ba6668e477437664aaae05da019a"
+    },
+    {
+      "path": "references/查询词怎么出.md",
+      "sha256": "fe4d444ce2e6d9c41fe2e68b898d6c57db82afbde17325d2c4e2087c192b2fef"
+    },
+    {
+      "path": "references/读真人原帖的办法.md",
+      "sha256": "b72c88680950a308762a2084f86a2bf3beea1ecfba77ccaa231dbe8a63ce9161"
+    },
+    {
+      "path": "scripts/appstore_new.py",
+      "sha256": "778d50ed71e11c684537cf14510dddba9f3fcb444275810ce2ced8ca8f5fe601"
+    },
+    {
+      "path": "scripts/dfs.py",
+      "sha256": "625194f68c06800c4d32c7a2c3ee30c55f677409161ddd1b98090b41b93abd0c"
+    },
+    {
+      "path": "scripts/domain_check.py",
+      "sha256": "d936fe6528b13d92350a2ed82010c7cfed12b443b2d5e2290541c1c4211a9425"
+    },
+    {
+      "path": "scripts/google_top20.js",
+      "sha256": "8d20c699bd9e26762246a46cc022399cf34c0908733a5026e816bc91d3d353d6"
+    },
+    {
+      "path": "scripts/serp_table.py",
+      "sha256": "bfd3848e074eca8c720fd33f8dd24d6302102ed125e67195773e3049dda4b5ed"
+    },
+    {
+      "path": "scripts/suggest.py",
+      "sha256": "8b8a6639830364adb5b4eb89747509e31c1e9e4f015808d2f11faa2809d4f42e"
+    },
+    {
+      "path": "scripts/whois_date.py",
+      "sha256": "365623fecc385735d8a6eb4d78961e7f8f26c954ed04f0aa97aa2af0196fff41"
+    }
+  ],
+  "changelog": "没有 DataForSEO 凭证时，先告诉用户有和没有差在哪，再让他选"
+}
